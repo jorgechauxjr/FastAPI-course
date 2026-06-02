@@ -1,9 +1,9 @@
 import zoneinfo
 from datetime import datetime
 from fastapi import FastAPI
-from models import Customer, Transaction, Invoice
+from models import CreateCustomer, Customer, Transaction, Invoice
 
-# 6. Modelo de datos y conexión de modelos en FastAPI
+# 7 Validación de Datos y Modelos en Endpoints de FastAPI
 
 app = FastAPI()
 
@@ -26,7 +26,6 @@ country_timezones = {
     "PE": "America/Lima"
 }
 
-
 @app.get("/time/{iso_code}")
 async def time(iso_code: str):
     iso = iso_code.upper()
@@ -34,9 +33,19 @@ async def time(iso_code: str):
     tz = zoneinfo.ZoneInfo(timezone_str)
     return {"time": datetime.now(tz)}
 
-@app.post("/customers")
-async def create_customer(customer_data: Customer):
-    return customer_data
+db_customers: list[Customer] = []
+
+@app.post("/customers", response_model=Customer)
+async def create_customer(customer_data: CreateCustomer):
+    customer = Customer.model_validate(customer_data.model_dump())
+    # Asumiendo que se hace en la base de datos. Aquí es para efectos practicos.
+    customer.id = len(db_customers)
+    db_customers.append(customer)
+    return customer
+
+@app.get("/customers", response_model=list[Customer])
+async def list_customer():
+    return db_customers
 
 @app.post("/transactions")
 async def create_transaction(transaction_data: Transaction):

@@ -1,14 +1,19 @@
 from pydantic import BaseModel
 
-# 6. Modelo de datos y conexión de modelos en FastAPI
+# 7 Validación de Datos y Modelos en Endpoints de FastAPI
 
-class Customer(BaseModel):
-    id: int
+class CustomerBase(BaseModel):
     name: str
     description: str | None
     email: str
     age: int
 
+class CreateCustomer(CustomerBase):
+    pass
+
+class Customer(CustomerBase):
+    id: int | None = None
+    
 class Transaction(BaseModel):
     id: int
     amount: int
