@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 # 5. Validación de datos con Pydantic
 """
-uvicorn dev
+fastapi dev
 abrir la documentación http://127.0.0.1:8000/docs
 probar el post
 """
