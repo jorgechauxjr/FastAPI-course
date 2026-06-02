@@ -47,6 +47,12 @@ async def create_customer(customer_data: CreateCustomer):
 async def list_customer():
     return db_customers
 
+@app.get("/customers/{customer_id}", response_model=Customer)
+async def list_customer_by_id(customer_id: int):
+    for customer in db_customers:
+        if customer.id == customer_id:
+            return customer
+
 @app.post("/transactions")
 async def create_transaction(transaction_data: Transaction):
     return transaction_data
