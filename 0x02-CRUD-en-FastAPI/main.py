@@ -37,9 +37,10 @@ db_customers: list[Customer] = []
 @app.post("/customers", response_model=Customer)
 async def create_customer(customer_data: CreateCustomer, session: SessionDep):
     customer = Customer.model_validate(customer_data.model_dump())
-    # Asumiendo que se hace en la base de datos. Aquí es para efectos practicos.
-    customer.id = len(db_customers)
-    db_customers.append(customer)
+    session.add(customer)
+    session.commit()
+    session.refresh(customer)
+    
     return customer
 
 @app.get("/customers", response_model=list[Customer])
