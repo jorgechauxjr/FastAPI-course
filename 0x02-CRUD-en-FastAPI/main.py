@@ -2,9 +2,9 @@ import zoneinfo
 from datetime import datetime
 from fastapi import FastAPI
 from models import CreateCustomer, Customer, Transaction, Invoice
-from db import SessionDep
+from db import SessionDep, create_all_tables
 
-app = FastAPI()
+app = FastAPI(lifespan=create_all_tables)
 
 @app.get("/")
 async def read_root():
