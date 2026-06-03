@@ -3,6 +3,7 @@ from datetime import datetime
 from fastapi import FastAPI
 from models import CreateCustomer, Customer, Transaction, Invoice
 from db import SessionDep, create_all_tables
+from sqlmodel import select
 
 app = FastAPI(lifespan=create_all_tables)
 
@@ -44,8 +45,8 @@ async def create_customer(customer_data: CreateCustomer, session: SessionDep):
     return customer
 
 @app.get("/customers", response_model=list[Customer])
-async def list_customer():
-    return db_customers
+async def list_customer(session: SessionDep):
+    return session.exec(select(Customer)).all() # Devuelve una lista
 
 @app.get("/customers/{customer_id}", response_model=Customer)
 async def list_customer_by_id(customer_id: int):
