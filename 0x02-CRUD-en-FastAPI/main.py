@@ -69,6 +69,20 @@ async def list_customer_by_id(customer_id: int):
     for customer in db_customers:
         if customer.id == customer_id:
             return customer
+        
+@app.put("/customers/{customer_id}", response_model=Customer)
+async def update_customer(customer_id: int, customer_data: CreateCustomer, session: SessionDep):
+    customer_db = session.get(Customer, customer_id)
+    if not customer_db:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Customer does not exist")
+    customer_db.name = customer_data.name
+    customer_db.description = customer_data.description
+    customer_db.email = customer_data.email
+    customer_db.age = customer_data.age
+    session.add(customer_db)
+    session.commit()
+    session.refresh(customer_db)
+    return customer_db
 
 @app.post("/transactions")
 async def create_transaction(transaction_data: Transaction):
