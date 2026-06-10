@@ -1,6 +1,6 @@
 import zoneinfo
 from datetime import datetime
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 from models import CreateCustomer, Customer, Transaction, Invoice
 from db import SessionDep, create_all_tables
 from sqlmodel import select
@@ -43,6 +43,13 @@ async def create_customer(customer_data: CreateCustomer, session: SessionDep):
     session.refresh(customer)
     
     return customer
+
+@app.get("/customers/{customer_id}", response_model=Customer)
+async def read_customer(customer_id: int, session: SessionDep):
+    customer_db = session.get(Customer, customer_id)
+    if not customer_db:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Customer doesn't exists")
+    return customer_db
 
 @app.get("/customers", response_model=list[Customer])
 async def list_customer(session: SessionDep):
